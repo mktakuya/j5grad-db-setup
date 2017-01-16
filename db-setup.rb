@@ -5,7 +5,7 @@ require './dic'
 
 class DBSetup
   attr_accessor :db
-  TABLE_NAMES = %w(departments positions skills employees)
+  TABLE_NAMES = %w(names departments positions skills employees)
 
   def initialize
     connect_opt = YAML.load_file('./config.yml')
@@ -20,7 +20,9 @@ class DBSetup
 
   def setup_db(employees)
     TABLE_NAMES.each do |table_name|
+      print "setup #{table_name}..."
       self.send("setup_#{table_name}", employees)
+      print "done\n"
     end
   end
 
@@ -42,6 +44,26 @@ class DBSetup
       end
     end
     employees
+  end
+
+  def setup_names(employees)
+    names = []
+    employees.each do |emp|
+      names.push(
+        {
+          first_name: emp['first_name'],
+          last_name: emp['last_name'],
+          first_kana: emp['first_kana'],
+          last_kana: emp['last_kana']
+        }
+      )
+    end
+
+    @db.transaction do
+      names.each do |name|
+        @db[:names].insert(name)
+      end
+    end
   end
 
   def setup_departments(employees)
@@ -83,6 +105,11 @@ class DBSetup
   def setup_employees(employees)
     @db.transaction do
       employees.each do |emp|
+        name_code = @db[:names].where(
+          first_name: emp['first_name'],
+          last_name: emp['last_name']
+        ).all[0][:code]
+
         dept_code = @db[:departments].where(
           name: emp['department']
         ).all[0][:code]
@@ -98,10 +125,7 @@ class DBSetup
         end
 
         @db[:employees].insert(
-          first_name: emp['first_name'],
-          last_name: emp['last_name'],
-          first_kana: emp['first_kana'],
-          last_kana: emp['last_kana'],
+          name_code: name_code,
           gender: emp['gender'] == '男性' ? 1 : 0,
           age: emp['age'],
           salary: emp['salary'],
