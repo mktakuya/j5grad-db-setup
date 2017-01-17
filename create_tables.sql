@@ -1,5 +1,5 @@
 CREATE TABLE names(
-    code        serial  PRIMARY KEY,
+    name_code        serial  PRIMARY KEY,
     first_name  text    NOT NULL,
     last_name   text    NOT NULL,
     first_kana  text    NOT NULL,
@@ -7,29 +7,29 @@ CREATE TABLE names(
 );
 
 CREATE TABLE departments(
-    code        serial  PRIMARY KEY,
-    name        text    UNIQUE  NOT NULL
+    department_code        serial  PRIMARY KEY,
+    department_name        text    UNIQUE  NOT NULL
 );
 
 CREATE TABLE positions (
-    code        serial  PRIMARY KEY,
-    name        text    UNIQUE  NOT NULL
+    position_code        serial  PRIMARY KEY,
+    position_name        text    UNIQUE  NOT NULL
 );
 
 CREATE TABLE skills (
-    code        serial  PRIMARY KEY,
-    name        text    UNIQUE  NOT NULL
+    skill_code        serial  PRIMARY KEY,
+    skill_name        text    UNIQUE  NOT NULL
 );
 
 CREATE TABLE employees (
-    code        serial  PRIMARY KEY,
-    name_code   integer REFERENCES names(code),
+    employee_code        serial  PRIMARY KEY,
+    name_code   integer REFERENCES names(name_code),
     gender      integer NOT NULL,
     age         integer NOT NULL,
     salary      integer NOT NULL,
-    department_code integer REFERENCES departments(code),
-    position_code integer REFERENCES positions(code),
-    skill_code integer REFERENCES skills(code)
+    department_code integer REFERENCES departments(department_code),
+    position_code integer REFERENCES positions(position_code),
+    skill_code integer REFERENCES skills(skill_code)
 );
 
 GRANT ALL ON names, departments, positions, skills, employees TO PUBLIC;

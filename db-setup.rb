@@ -73,7 +73,7 @@ class DBSetup
 
     @db.transaction do
       depts.each do |dept|
-        @db[:departments].insert(name: dept)
+        @db[:departments].insert(department_name: dept)
       end
     end
   end
@@ -85,7 +85,7 @@ class DBSetup
 
     @db.transaction do
       positions.each do |position|
-        @db[:positions].insert(name: position)
+        @db[:positions].insert(position_name: position)
       end
     end
   end
@@ -97,7 +97,7 @@ class DBSetup
 
     @db.transaction do
       skills.each do |skill|
-        @db[:skills].insert(name: skill) unless skill.nil?
+        @db[:skills].insert(skill_name: skill) unless skill.nil?
       end
     end
   end
@@ -108,20 +108,20 @@ class DBSetup
         name_code = @db[:names].where(
           first_name: emp['first_name'],
           last_name: emp['last_name']
-        ).all[0][:code]
+        ).all[0][:name_code]
 
         dept_code = @db[:departments].where(
-          name: emp['department']
-        ).all[0][:code]
+          department_name: emp['department']
+        ).all[0][:department_code]
 
         position_code = @db[:positions].where(
-          name: emp['position']
-        ).all[0][:code]
+          position_name: emp['position']
+        ).all[0][:position_code]
 
         unless emp['skill'].nil?
           skill_code = @db[:skills].where(
-            name: emp['skill']
-          ).all[0][:code]
+            skill_name: emp['skill']
+          ).all[0][:skill_code]
         end
 
         @db[:employees].insert(
